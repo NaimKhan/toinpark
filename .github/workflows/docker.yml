@@ -35,7 +35,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: self-hosted  # এটি আপনার ২য় সার্ভারে কাজ করবে
+    runs-on: self-hosted
     steps:
       - name: Pull and Run App
         run: |
