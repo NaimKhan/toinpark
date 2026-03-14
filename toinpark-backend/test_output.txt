@@ -1,0 +1,26 @@
+FAIL src/modules/user/staking/staking.service.spec.ts
+  ● Test suite failed to run
+
+    Cannot find module 'src/common/services/reqAndRes.service' from 'modules/user/staking/staking.service.ts'
+
+    Require stack:
+      modules/user/staking/staking.service.ts
+      modules/user/staking/staking.service.spec.ts
+
+    [0m [90m 1 |[39m [36mimport[39m { [33mHttpStatus[39m[33m,[39m [33mInjectable[39m[33m,[39m [33mLogger[39m } [36mfrom[39m [32m"@nestjs/common"[39m[33m;[39m
+     [90m 2 |[39m [36mimport[39m { plainToInstance } [36mfrom[39m [32m"class-transformer"[39m[33m;[39m
+    [31m[1m>[22m[39m[90m 3 |[39m [36mimport[39m { [33mReqAndResponseService[39m } [36mfrom[39m [32m"src/common/services/reqAndRes.service"[39m[33m;[39m
+     [90m   |[39m [31m[1m^[22m[39m
+     [90m 4 |[39m [36mimport[39m { [33mPrismaService[39m } [36mfrom[39m [32m"src/core"[39m[33m;[39m
+     [90m 5 |[39m [36mimport[39m { [33mStakingPackagePlanResponseDto[39m[33m,[39m [33mUserStakingPackageDTO[39m } [36mfrom[39m [32m"./dto/staking-package-response.dto"[39m[33m;[39m
+     [90m 6 |[39m [36mimport[39m { [33mCreateTransactionRequestModel[39m } [36mfrom[39m [32m"./dto/staking-package-request.dto"[39m[33m;[39m[0m
+
+      at Resolver._throwModNotFoundError (../node_modules/jest-resolve/build/index.js:863:11)
+      at Object.<anonymous> (modules/user/staking/staking.service.ts:3:1)
+      at Object.<anonymous> (modules/user/staking/staking.service.spec.ts:2:1)
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        3.288 s
+Ran all test suites matching src/modules/user/staking/staking.service.spec.ts.

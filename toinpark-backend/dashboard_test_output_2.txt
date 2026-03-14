@@ -1,0 +1,16 @@
+PASS src/modules/user/dashboard/dashboard.service.spec.ts (5.589 s)
+  DashboardService
+    √ should be defined (11 ms)
+    getUserToinSummary
+      √ should return user toin summary (5 ms)
+      √ should handle wallet not found (3 ms)
+    getAirDropEvent
+      √ should return airdrop event details (4 ms)
+    invitationClaimed
+      √ should calculate referral bonus correctly (10 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       5 passed, 5 total
+Snapshots:   0 total
+Time:        5.823 s
+Ran all test suites matching src/modules/user/dashboard/dashboard.service.spec.ts.

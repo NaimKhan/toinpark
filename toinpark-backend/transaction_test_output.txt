@@ -1,0 +1,34 @@
+FAIL src/modules/user/transaction/transaction.service.spec.ts (6.036 s)
+  TransactionService
+    √ should be defined (11 ms)
+    getReport
+      × should return paginated transaction report (9 ms)
+    transactionCreate
+      √ should create a transaction successfully (5 ms)
+      √ should handle transaction creation failure (4 ms)
+    updateWalletBalanceWithRetry
+      √ should update wallet balance successfully (3 ms)
+      √ should throw error if wallet not found (2 ms)
+
+  ● TransactionService › getReport › should return paginated transaction report
+
+    expect(received).toEqual(expected) // deep equality
+
+    Expected: [{"id": "1", "toinAmount": "100"}]
+    Received: undefined
+
+    [0m [90m 59 |[39m
+     [90m 60 |[39m             expect(result[33m.[39msuccess)[33m.[39mtoBe([36mtrue[39m)[33m;[39m
+    [31m[1m>[22m[39m[90m 61 |[39m             expect(result[33m.[39mdata[33m.[39mdata)[33m.[39mtoEqual(mockTransactions)[33m;[39m
+     [90m    |[39m                                      [31m[1m^[22m[39m
+     [90m 62 |[39m             expect(result[33m.[39mdata[33m.[39mmeta[33m.[39mtotalRecords)[33m.[39mtoBe(totalRecords)[33m;[39m
+     [90m 63 |[39m         })[33m;[39m
+     [90m 64 |[39m     })[33m;[39m[0m
+
+      at Object.<anonymous> (modules/user/transaction/transaction.service.spec.ts:61:38)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 5 passed, 6 total
+Snapshots:   0 total
+Time:        6.31 s
+Ran all test suites matching src/modules/user/transaction/transaction.service.spec.ts.

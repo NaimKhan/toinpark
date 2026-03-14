@@ -1,0 +1,16 @@
+PASS src/modules/user/staking/staking.service.spec.ts (7.699 s)
+  StakingService
+    √ should be defined (13 ms)
+    buyStakingPackage
+      √ should successfully buy a staking package (7 ms)
+      √ should fail if package not found (3 ms)
+      √ should fail if amount is out of range (2 ms)
+    commissionLevelingProcessJob
+      √ should process commissions correctly (6 ms)
+      √ should handle no data to process (2 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       6 passed, 6 total
+Snapshots:   0 total
+Time:        7.981 s
+Ran all test suites matching src/modules/user/staking/staking.service.spec.ts.

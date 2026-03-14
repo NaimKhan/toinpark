@@ -1,0 +1,17 @@
+PASS src/modules/user/transaction/transaction.service.spec.ts (6.11 s)
+  TransactionService
+    √ should be defined (12 ms)
+    getReport
+      √ should return paginated transaction report (3 ms)
+    transactionCreate
+      √ should create a transaction successfully (4 ms)
+      √ should handle transaction creation failure (10 ms)
+    updateWalletBalanceWithRetry
+      √ should update wallet balance successfully (3 ms)
+      √ should throw error if wallet not found (2 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       6 passed, 6 total
+Snapshots:   0 total
+Time:        6.392 s, estimated 7 s
+Ran all test suites matching src/modules/user/transaction/transaction.service.spec.ts.

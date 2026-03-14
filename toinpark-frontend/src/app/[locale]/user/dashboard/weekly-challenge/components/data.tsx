@@ -1,0 +1,58 @@
+export const challenges = [
+    {
+      id: 1,
+      name: "Complete KYC",
+      buttonText: "+10 TOINS",
+      avatarUrl: "/images/socials/weekly-challenge/complete-kyc.png",
+      isCompleted: true,
+    },
+    {
+      id: 2,
+      name: "Share on Facebook",
+      buttonText: "+10 TOINS",
+      avatarUrl: "/images/socials/weekly-challenge/share-facebook.png",
+      isCompleted: false,
+    },
+    {
+      id: 3,
+      name: "Share on X",
+      buttonText: "+10 TOINS",
+      avatarUrl: "/images/socials/weekly-challenge/share-x.png",
+      isCompleted: false,
+    },
+    {
+      id: 4,
+      name: "Comment on Linkedin Post",
+      buttonText: "+10 TOINS",
+      avatarUrl: "/images/socials/weekly-challenge/comment-linkedin.png",
+      isCompleted: false,
+    },
+    {
+      id: 5,
+      name: "Like 3 Videos on Youtube",
+      buttonText: "+10 TOINS",
+      avatarUrl: "/images/socials/weekly-challenge/like-youtube.png",
+      isCompleted: false,
+    },
+    {
+      id: 6,
+      name: "Share the app",
+      buttonText: "+10 TOINS",
+      avatarUrl: "/images/socials/weekly-challenge/share-app.png",
+      isCompleted: false,
+    },
+    {
+      id: 7,
+      name: "Rate our app",
+      buttonText: "+10 TOINS",
+      avatarUrl: "/images/socials/weekly-challenge/rate-app.png",
+      isCompleted: false,
+    },
+    {
+      id: 8,
+      name: "Give us your feedback",
+      buttonText: "+10 TOINS",
+      avatarUrl: "/images/socials/weekly-challenge/give-feedback.png",
+      isCompleted: false,
+    },
+  ];

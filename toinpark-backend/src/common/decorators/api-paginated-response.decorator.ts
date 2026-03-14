@@ -1,0 +1,31 @@
+import { applyDecorators, Type } from '@nestjs/common';
+import { ApiExtraModels, ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
+import { PaginatedResponseDto } from '../dto/pagination.dto';
+
+/**
+ * Swagger decorator for paginated responses
+ * Usage: @ApiPaginatedResponse(UserDto)
+ */
+export const ApiPaginatedResponse = <TModel extends Type<any>>(
+  model: TModel,
+) => {
+  return applyDecorators(
+    ApiExtraModels(PaginatedResponseDto, model),
+    ApiOkResponse({
+      description: 'Successfully retrieved paginated list',
+      schema: {
+        allOf: [
+          { $ref: getSchemaPath(PaginatedResponseDto) },
+          {
+            properties: {
+              data: {
+                type: 'array',
+                items: { $ref: getSchemaPath(model) },
+              },
+            },
+          },
+        ],
+      },
+    }),
+  );
+};

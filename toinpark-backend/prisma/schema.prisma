@@ -1,0 +1,979 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+// generator dbml {
+//   provider = "node node_modules/prisma-dbml-generator"
+//   output   = "./prisma/dbml"
+// }
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Country {
+  id           String        @id @default(uuid())
+  name         String        @unique @db.VarChar(100)
+  code         String        @unique @db.VarChar(3)
+  phoneCode    String?       @map("phone_code") @db.VarChar(20)
+  currencyCode String?       @map("currency_code") @db.VarChar(20)
+  isActive     Boolean       @default(true) @map("is_active")
+  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt    DateTime?     @updatedAt @map("updated_at") @db.Timestamp(6)
+  createdBy    String?       @map("created_by")
+  deletedAt    DateTime?     @map("deleted_at") @db.Timestamp(6)
+  deletedBy    String?       @map("deleted_by")
+  updatedBy    String?       @map("updated_by")
+  states       State[]
+  userProfiles UserProfile[]
+
+  @@map("countries")
+}
+
+model State {
+  id           String        @id @default(uuid())
+  countryId    String        @map("country_id")
+  name         String        @db.VarChar(100)
+  code         String?       @db.VarChar(20)
+  isActive     Boolean       @default(true) @map("is_active")
+  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt    DateTime?     @updatedAt @map("updated_at") @db.Timestamp(6)
+  createdBy    String?       @map("created_by")
+  deletedAt    DateTime?     @map("deleted_at") @db.Timestamp(6)
+  deletedBy    String?       @map("deleted_by")
+  updatedBy    String?       @map("updated_by")
+  country      Country       @relation(fields: [countryId], references: [id])
+  userProfiles UserProfile[]
+
+  @@index([countryId])
+  @@map("states")
+}
+
+model User {
+  id                String     @id @default(uuid())
+  phoneNumber       String?    @unique @map("phone_number") @db.VarChar(20)
+  email             String?    @unique @db.VarChar(255)
+  emailVerified     Boolean    @default(false) @map("email_verified")
+  emailVerifiedAt   DateTime?  @map("email_verified_at") @db.Timestamp(6)
+  emailChangingCount    Int        @default(0) @map("email_changing_count")
+  phoneVerified     Boolean    @default(false) @map("phone_verified")
+  phoneVerifiedAt   DateTime?  @map("phone_verified_at") @db.Timestamp(6)
+  phoneChangingCount    Int        @default(0) @map("phone_changing_count")
+  username          String     @unique @db.VarChar(50)
+  userRole          String?    @default("Admin") @map("user_role") @db.VarChar(50)
+  status            UserStatus @default(ACTIVE)
+  twoFactorEnabled  Boolean    @default(false) @map("two_factor_enabled")
+  twoFactorSecret   String?    @map("two_factor_secret") @db.VarChar(255)
+  lockoutEnabled    Boolean    @default(true) @map("lockout_enabled")
+  lockoutEnd        DateTime?  @map("lockout_end") @db.Timestamp(6)
+  accessFailedCount Int        @default(0) @map("access_failed_count")
+  referrerId        String?    @map("referrer_id")
+  referralCode      String     @unique @map("referral_code") @db.VarChar(20)
+  lastLoginAt       DateTime?  @map("last_login_at") @db.Timestamp(6)
+  lastLoginIp       String?    @map("last_login_ip") @db.VarChar(45)
+  loginCount        Int        @default(0) @map("login_count")
+  isKycVerified     Boolean    @default(false) @map("is_kyc_verified")
+  kycVerifiedAt     DateTime?  @map("kyc_verified_at") @db.Timestamp(6)
+  createdAt         DateTime   @default(now()) @map("created_at") @db.Timestamp(6)
+  createdBy         String?    @map("created_by")
+  updatedAt         DateTime?  @updatedAt @map("updated_at") @db.Timestamp(6)
+  updatedBy         String?    @map("updated_by")
+  deletedAt         DateTime?  @map("deleted_at") @db.Timestamp(6)
+  deletedBy         String?    @map("deleted_by")
+  toinAccountNumber String     @unique @map("toin_account_number") @db.VarChar(20)
+  PasswordHashed    String     @default("Password@123") @map("Password_hashed") @db.VarChar(255)
+  totalReferred     Int        @default(0) @map("total_referred")
+
+  createdCommunityEvents     CommunityEvent[]
+  referralHistory            ReferralHistory[]
+  roleWiseMenuAndPermissions RoleWiseMenuAndPermission[]
+  ticketMessages             TicketMessage[]
+  tickets                    Ticket[]
+  userTransaction            Transaction[]
+  createdTutorialCategories  TutorialCategory[]
+  createdTutorials           Tutorial[]
+  userProfile                UserProfile?
+  userRoles                  UserRoles[]
+  userStakes                 UserStakingPackage[]
+  userWallet                 UserWallet?
+  userChangeHistoryForEmailOrPhone UserChangeHistoryForEmailOrPhone[]
+  userWalletAddresses        UserWalletAddress[]
+  createdStakes              UserStakingPackage[] @relation("StakingCreator")
+  stakingAdjustments         StakingAdjustment[]
+  createdStakingAdjustments  StakingAdjustment[] @relation("StakingAdjustmentCreator")
+
+  // Referral
+  referrer  User?  @relation("UserReferral", fields: [referrerId], references: [id])
+  referrals User[] @relation("UserReferral")
+
+  // Referral Hierarchy
+  referralHierarchyAsUser     ReferralHierarchy[] @relation("ReferralHierarchyUser")
+  referralHierarchyAsAncestor ReferralHierarchy[] @relation("ReferralHierarchyAncestor")
+
+  // Created By
+  createdByUser User?  @relation("UserCreatedBy", fields: [createdBy], references: [id])
+  createdUsers  User[] @relation("UserCreatedBy")
+
+  // Updated By
+  updatedByUser User?  @relation("UserUpdatedBy", fields: [updatedBy], references: [id])
+  updatedUsers  User[] @relation("UserUpdatedBy")
+
+  // Deleted By
+  deletedByUser User?  @relation("UserDeletedBy", fields: [deletedBy], references: [id])
+  deletedUsers  User[] @relation("UserDeletedBy")
+
+  // Notifications
+  notifications Notification[]
+
+  // Withdrawal Requests
+  createdWithdrawalRequests  WithdrawalRequest[]
+
+  @@index([email])
+  @@index([phoneNumber])
+  @@index([username])
+  @@index([toinAccountNumber])
+  @@index([referralCode])
+  @@index([referrerId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([deletedAt])
+  @@map("users")
+}
+
+model UserWallet {
+  id                   String    @id @default(uuid())
+  version              String    @unique @default(uuid())
+  userId               String    @unique @map("user_id")
+  walletBalance        Decimal   @default(0.0000) @map("wallet_balance") @db.Decimal(18, 4)
+  totalStakingBonus    Decimal   @default(0.0000) @map("total_staking_bonus") @db.Decimal(18, 4)
+  totalClaimBonus      Decimal   @default(0.0000) @map("total_claim_bonus") @db.Decimal(18, 4)
+  totalEntryBonus      Decimal   @default(0.0000) @map("total_entry_bonus") @db.Decimal(18, 4)
+  totalKycBonus        Decimal   @default(0.0000) @map("total_kyc_bonus") @db.Decimal(18, 4)
+  totalLevelingBonus   Decimal   @default(0.0000) @map("total_leveling_bonus") @db.Decimal(18, 4)
+  totalReferral        Decimal   @default(0.0000) @map("total_referral") @db.Decimal(18, 4)
+  totalCommissionBonus Decimal   @default(0.0000) @map("total_commission_bonus") @db.Decimal(18, 4)
+  totalStaking         Decimal   @default(0.0000) @map("total_staking") @db.Decimal(18, 4)
+  totalChallengeBonus  Decimal   @default(0.0000) @map("total_challenge_bonus") @db.Decimal(18, 4)
+  totalWithdrawals     Decimal   @default(0.0000) @map("total_withdrawals") @db.Decimal(18, 4)
+  totalRefund          Decimal   @default(0.0000) @map("total_refund") @db.Decimal(18, 4)
+  totalVoid            Decimal   @default(0.0000) @map("total_void") @db.Decimal(18, 4)
+  createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  createdBy            String?   @map("created_by")
+  updatedAt            DateTime? @updatedAt @map("updated_at") @db.Timestamp(6)
+  updatedBy            String?   @map("updated_by")
+  deletedAt            DateTime? @map("deleted_at") @db.Timestamp(6)
+  deletedBy            String?   @map("deleted_by")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([createdAt])
+  @@index([deletedAt])
+  @@map("user_wallets")
+}
+
+model UserProfile {
+  id              String    @id @default(uuid())
+  firstName       String?   @map("first_name") @db.VarChar(100)
+  lastName        String?   @map("last_name") @db.VarChar(100)
+  dateOfBirth     DateTime? @map("date_of_birth") @db.Date
+  gender          String?   @db.VarChar(20)
+  profileImageUrl String?   @map("profile_image_url") @db.VarChar(500)
+  bio             String?
+  addressLine1    String?   @map("address_line1") @db.VarChar(255)
+  addressLine2    String?   @map("address_line2") @db.VarChar(255)
+  city            String?   @db.VarChar(100)
+  stateId         String?   @map("state_id")
+  countryId       String?   @map("country_id")
+  zipCode         String?   @map("zip_code") @db.VarChar(20)
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  createdBy       String?   @map("created_by")
+  updatedAt       DateTime? @updatedAt @map("updated_at") @db.Timestamp(6)
+  updatedBy       String?   @map("updated_by")
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamp(6)
+  deletedBy       String?   @map("deleted_by")
+  userId          String    @unique @map("user_id")
+
+  country Country? @relation(fields: [countryId], references: [id])
+  state   State?   @relation(fields: [stateId], references: [id])
+  user    User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([deletedAt])
+  @@map("user_profiles")
+}
+
+model UserChangeHistoryForEmailOrPhone {
+  id                            String      @id @default(uuid())
+  logId                         Int         @default(autoincrement())
+  userId                        String      @map("user_id")
+  userName                      String?     @map("user_name") 
+  fullName                      String?     @map("full_name") 
+  changeType                    String?     @map("change_type") 
+  verifiedAt                    DateTime?   @map("verified_at")
+  oldValue                      String?     @map("old_value") @db.VarChar(255)   
+  newValue                      String?     @map("new_value") @db.VarChar(255) 
+  requestedAt                   DateTime?   @map("requested_at")  
+  remarks                       String?     @map("remarks") @db.VarChar(255) 
+  createdAt                     DateTime    @default(now()) @map("created_at") @db.Timestamp(6)
+  createdBy                     String?     @map("created_by")
+  updatedAt                     DateTime?   @updatedAt @map("updated_at") @db.Timestamp(6)
+  updatedBy                     String?     @map("updated_by")
+  deletedAt                     DateTime?   @map("deleted_at") @db.Timestamp(6)
+  deletedBy                     String?     @map("deleted_by")
+ 
+
+  //relation
+  user User @relation(fields: [userId], references: [id])
+  
+  @@index([userId])
+  @@index([createdAt])
+  @@index([deletedAt])
+  @@map("user_change_history_for_email_or_phone")
+}
+
+model Roles {
+  id                         String                      @id @default(uuid())
+  name                       String?                     @db.VarChar(150)
+  normalizedName             String?                     @map("normalized_name") @db.VarChar(150)
+  isActive                   Boolean                     @default(true) @map("is_active")
+  createdAt                  DateTime                    @default(now()) @map("created_at")
+  updatedAt                  DateTime?                   @map("updated_at")
+  deletedAt                  DateTime?                   @map("deleted_at")
+  createdBy                  String?                     @map("created_by")
+  updatedBy                  String?                     @map("updated_by")
+  deletedBy                  String?                     @map("deleted_by")
+  roleWiseMenuAndPermissions RoleWiseMenuAndPermission[]
+  userRoles                  UserRoles[]
+
+  @@map("roles")
+}
+
+model UserRoles {
+  userId String @map("user_id")
+  roleId String @map("role_id")
+  role   Roles  @relation(fields: [roleId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@id([userId, roleId])
+  @@map("user_roles")
+}
+
+model MenuAndPermissionSetups {
+  id                         String                      @id @default(uuid())
+  parentId                   String?                     @map("parent_id")
+  headTitle                  String?                     @map("head_title") @db.VarChar(255)
+  level                      Int?
+  title                      String?                     @db.VarChar(255)
+  icon                       String?                     @db.VarChar(100)
+  type                       String?                     @db.VarChar(100)
+  horizontalList             Boolean?                    @map("horizontal_list")
+  path                       String?                     @db.VarChar(255)
+  bookmark                   String?                     @db.VarChar(255)
+  featureName                String?                     @map("feature_name") @db.VarChar(255)
+  controllerName             String?                     @map("controller_name") @db.VarChar(255)
+  methodName                 String?                     @map("method_name") @db.VarChar(255)
+  methodType                 String?                     @map("method_type") @db.VarChar(50)
+  applicationName            String?                     @map("application_name") @db.VarChar(150)
+  applicationBaseUrl         String?                     @map("application_base_url") @db.VarChar(255)
+  menuSequence               Int?                        @map("menu_sequence")
+  isVisible                  Boolean?                    @map("is_visible")
+  showInMenuItem             Boolean?                    @map("show_in_menu_item")
+  allowAnonymous             Boolean?                    @map("allow_anonymous")
+  restrictionAllow           Boolean?                    @map("restriction_allow")
+  isActive                   Boolean                     @default(true) @map("is_active")
+  createdAt                  DateTime                    @default(now()) @map("created_at")
+  updatedAt                  DateTime?                   @map("updated_at")
+  deletedAt                  DateTime?                   @map("deleted_at")
+  createdBy                  String?                     @map("created_by")
+  updatedBy                  String?                     @map("updated_by")
+  deletedBy                  String?                     @map("deleted_by")
+  parent                     MenuAndPermissionSetups?    @relation("MenuParent", fields: [parentId], references: [id])
+  children                   MenuAndPermissionSetups[]   @relation("MenuParent")
+  roleWiseMenuAndPermissions RoleWiseMenuAndPermission[]
+
+  @@map("menu_and_permission_setups")
+}
+
+model RoleWiseMenuAndPermission {
+  id                       String                  @id @default(uuid())
+  menuAndPermissionSetupId String                  @map("menu_and_permission_setup_id")
+  roleId                   String                  @map("role_id")
+  roleName                 String?                 @map("role_name") @db.VarChar(150)
+  userId                   String                  @map("user_id")
+  isActive                 Boolean                 @default(true) @map("is_active")
+  createdAt                DateTime                @default(now()) @map("created_at")
+  updatedAt                DateTime?               @map("updated_at")
+  deletedAt                DateTime?               @map("deleted_at")
+  createdBy                String?                 @map("created_by")
+  updatedBy                String?                 @map("updated_by")
+  deletedBy                String?                 @map("deleted_by")
+  menuAndPermissionSetup   MenuAndPermissionSetups @relation(fields: [menuAndPermissionSetupId], references: [id])
+  role                     Roles                   @relation(fields: [roleId], references: [id])
+  user                     User                    @relation(fields: [userId], references: [id])
+
+  @@index([menuAndPermissionSetupId])
+  @@index([roleId])
+  @@index([userId])
+  @@map("role_wise_menu_and_permissions")
+}
+
+model RequestResponsesLog {
+  id          String    @id @default(uuid())
+  request     String?
+  response    String?
+  userId      String?   @map("user_id")
+  errorLog    String?   @map("error_log")
+  methodName  String?   @map("method_name") @db.VarChar(150)
+  requestedIp String?   @map("requested_ip") @db.VarChar(100)
+  fullRoute   String?   @map("full_route") @db.VarChar(255)
+  actionVerb  String?   @map("action_verb") @db.VarChar(20)
+  oldData     String?   @map("old_data")
+  newData     String?   @map("new_data")
+  isActive    Boolean   @default(true) @map("is_active")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  createdBy   String?   @map("created_by")
+  updatedAt   DateTime? @map("updated_at")
+  updatedBy   String?   @map("updated_by")
+  deletedAt   DateTime? @map("deleted_at")
+  deletedBy   String?   @map("deleted_by")
+  //user        User?     @relation(fields: [userId], references: [id])
+
+  @@map("request_responses_logs")
+}
+
+model SuccessOrErrorOrSmsOrEmailText {
+  id                    String    @id @default(uuid())
+  messageCode           Int?      @map("message_code")
+  successOrErrorMessage String?   @map("success_or_error_message")
+  smsMessage            String?   @map("sms_message")
+  emailMessage          String?   @map("email_message")
+  messageType           String?   @map("message_type") @db.VarChar(50)
+  isActive              Boolean   @default(true) @map("is_active")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  createdBy             String?   @map("created_by")
+  updatedAt             DateTime? @map("updated_at")
+  updatedBy             String?   @map("updated_by")
+  deletedAt             DateTime? @map("deleted_at")
+  deletedBy             String?   @map("deleted_by")
+  subject_name          String?   @db.Char(500)
+  statusCode            Int?      @map("status_code")
+  httpStatusName        String?   @map("http_status_name")
+
+  @@map("success_or_error_or_sms_or_email_texts")
+}
+
+model AnnouncementCategory {
+  id                    String                 @id @default(uuid())
+  name                  String                 @db.VarChar(255)
+  description           String?
+  isActive              Boolean                @default(true) @map("is_active")
+  createdAt             DateTime               @default(now()) @map("created_at")
+  createdBy             String?                @map("created_by")
+  updatedAt             DateTime?              @map("updated_at")
+  updatedBy             String?                @map("updated_by")
+  deletedAt             DateTime?              @map("deleted_at")
+  deletedBy             String?                @map("deleted_by")
+  officialAnnouncements OfficialAnnouncement[]
+
+  @@map("announcement_categories")
+}
+
+model OfficialAnnouncement {
+  id           String               @id @default(uuid())
+  title        String?              @db.VarChar(255)
+  message      String?
+  startDate    DateTime?            @map("start_date")
+  endDate      DateTime?            @map("end_date")
+  isActive     Boolean              @default(true) @map("is_active")
+  createdAt    DateTime             @default(now()) @map("created_at")
+  updatedAt    DateTime?            @map("updated_at")
+  deletedAt    DateTime?            @map("deleted_at")
+  createdBy    String?              @map("created_by")
+  updatedBy    String?              @map("updated_by")
+  deletedBy    String?              @map("deleted_by")
+  categoryId   String               @map("category_id")
+  audienceType AudienceType         @map("audience_type")
+  category     AnnouncementCategory @relation(fields: [categoryId], references: [id])
+
+  @@map("official_announcements")
+}
+
+model TutorialCategory {
+  id          String     @id @default(uuid())
+  name        String?    @db.VarChar(150)
+  description String?
+  isActive    Boolean    @default(true) @map("is_active")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  createdBy   String?    @map("created_by")
+  updatedAt   DateTime?  @map("updated_at")
+  updatedBy   String?    @map("updated_by")
+  deletedAt   DateTime?  @map("deleted_at")
+  deletedBy   String?    @map("deleted_by")
+  creator     User?      @relation(fields: [createdBy], references: [id])
+  tutorials   Tutorial[]
+
+  @@map("tutorial_categories")
+}
+
+model Tutorial {
+  id                 String           @id @default(uuid())
+  title              String?          @db.VarChar(255)
+  description        String?
+  type               String?          @db.VarChar(50)
+  duration           String?          @db.VarChar(50)
+  isActive           Boolean          @default(true) @map("is_active")
+  createdAt          DateTime         @default(now()) @map("created_at")
+  createdBy          String?          @map("created_by")
+  updatedAt          DateTime?        @map("updated_at")
+  updatedBy          String?          @map("updated_by")
+  deletedAt          DateTime?        @map("deleted_at")
+  deletedBy          String?          @map("deleted_by")
+  filePath           String?          @db.VarChar(500)
+  thumbnailPath      String?          @db.VarChar(500)
+  isFeatured         Boolean          @default(false)
+  sourceLink         String?          @db.VarChar(500)
+  tutorialCategoryId String
+  creator            User?            @relation(fields: [createdBy], references: [id])
+  category           TutorialCategory @relation(fields: [tutorialCategoryId], references: [id])
+
+  @@map("tutorials")
+}
+
+model CommunityEvent {
+  id             String    @id @default(uuid())
+  title          String?   @db.VarChar(255)
+  description    String?
+  eventDate      DateTime? @map("event_date")
+  locationName   String?   @map("location_name") @db.VarChar(255)
+  address        String?   @db.VarChar(500)
+  mapLink        String?   @map("map_link") @db.VarChar(500)
+  eventLink      String?   @map("event_link") @db.VarChar(500)
+  bannerImageUrl String?   @map("banner_image_url") @db.VarChar(500)
+  isActive       Boolean   @default(true) @map("is_active")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  createdBy      String?   @map("created_by")
+  updatedAt      DateTime? @map("updated_at")
+  updatedBy      String?   @map("updated_by")
+  deletedAt      DateTime? @map("deleted_at")
+  deletedBy      String?   @map("deleted_by")
+  eventType      String?   @db.VarChar(50)
+  eventLocation  String?   @map("event_location") @db.VarChar(500)
+  isFeatured     Boolean   @default(false)
+  creator        User?     @relation(fields: [createdBy], references: [id])
+
+  @@map("community_events")
+}
+
+model SystemSetting {
+  id        String    @id @default(uuid())
+  key       String    @unique
+  value     String
+  order     Int       @default(0)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  @@map("system_settings")
+}
+
+model StakingPackagePlan {
+  id                        String  @id @default(uuid())
+  name                      String  @db.VarChar(50)
+  description               String?
+  dailyProfitPercent        Decimal @map("daily_profit_percent") @db.Decimal(5, 2)
+  bonusAmount               Decimal @default(0) @map("bonus_amount") @db.Decimal(18, 2)
+  maxToinAmount             Decimal @map("max_toin_amount") @db.Decimal(18, 2)
+  minToinAmount             Decimal @map("min_toin_amount") @db.Decimal(18, 2)
+  minimumDurationInDays     Int     @map("minimum_duration_in_days")
+  recurringProfitDays       Int     @map("recurring_profit_days")
+  totalToinPurchasedWithUSD Decimal @default(0) @map("total_toin_purchased_with_usd") @db.Decimal(18, 2)
+
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at")
+  createdBy String?   @map("created_by")
+  updatedAt DateTime? @map("updated_at")
+  updatedBy String?   @map("updated_by")
+  deletedAt DateTime? @map("deleted_at")
+  deletedBy String?   @map("deleted_by")
+
+  userStakes   UserStakingPackage[]
+
+  @@map("staking_package_plans")
+}
+
+model UserStakingPackage {
+  id                    String    @id @default(uuid())
+  userId                String    @map("user_id")
+  packageId             String    @map("package_id")
+  toinAmount            Decimal?  @map("toin_amount") @db.Decimal(18, 2)
+  usdtAmount            Decimal?  @map("usdt_amount") @db.Decimal(18, 2)
+  bonusAmount           Decimal?  @default(0) @map("bonus_amount") @db.Decimal(18, 2)
+  dailyProfitPercent    Decimal?  @map("daily_profit_percent") @db.Decimal(5, 2)
+  startDate             DateTime? @map("start_date")
+  totalProfit           Decimal?  @default(0) @map("total_profit") @db.Decimal(18, 2)
+  initialEndDate        DateTime? @map("initial_end_date")
+  recurringProfitDays   Int?      @map("recurring_profit_days")
+  previousRewardDate    DateTime? @map("previous_reward_date")
+  nextRewardDate        DateTime? @map("next_reward_date")
+  usdConversionRate     Decimal?  @map("usd_conversion_rate") @db.Decimal(18, 2)
+  stakedToin            Boolean?  @default(true) @map("staked_toin")
+  isBonusDone           Boolean?  @default(false) @map("is_bonus_done")
+  isLevelingBonusDone   Boolean?  @default(false) @map("is_leveling_bonus_done")
+  submitForWithdraw     Boolean?  @default(false) @map("submit_for_withdraw")
+  withdrawalStatus      String?   @map("withdrawal_status")
+  isActive              Boolean?  @default(true) @map("is_active")
+  minimumDurationInDays Int?      @map("minimum_duration_in_days")
+  createdAt             DateTime? @default(now()) @map("created_at")
+  createdBy             String?   @map("created_by")
+  updatedAt             DateTime? @map("updated_at")
+  updatedBy             String?   @map("updated_by")
+  remarks               String?   @map("remarks")
+
+  stakeCreatedBy        StakeCreatedBy @default(MEMBER) @map("stake_created_by")
+
+  package StakingPackagePlan @relation(fields: [packageId], references: [id])
+  user    User               @relation(fields: [userId], references: [id])
+  creator User?              @relation("StakingCreator", fields: [createdBy], references: [id])
+  
+  
+  withdrawalRequests  WithdrawalRequest[]
+  stakingAdjustments  StakingAdjustment[]
+  transactions        Transaction[]
+
+  @@map("user_staking_packages")
+}
+
+model StakingAdjustment {
+  id                    String                  @id @default(uuid())
+  userId                String                  @map("user_id")
+  userStakingPackageId  String                  @map("user_staking_package_id")
+  toinAmount            Decimal                 @map("toin_amount") @db.Decimal(18, 8)
+  usdtAmount            Decimal                 @map("usdt_amount") @db.Decimal(18, 8)
+  usdtConversionRate    Decimal                 @map("usdt_conversion_rate") @db.Decimal(18, 8)
+  type                  StakingAdjustmentType   @map("type")
+  remark                String?                 @map("remark") @db.VarChar(255)
+  createdAt             DateTime                @default(now()) @map("created_at")
+  createdBy             String?                 @map("created_by")
+
+  // Relations
+  user                  User                    @relation(fields: [userId], references: [id])
+  staking               UserStakingPackage      @relation(fields: [userStakingPackageId], references: [id])
+  creator User? @relation("StakingAdjustmentCreator", fields: [createdBy], references: [id])
+  transaction          Transaction?
+
+  @@map("staking_adjustments")
+}
+
+model Transaction {
+  id                           String             @id @default(uuid())
+  transactionAutoId            String             @unique @map("transaction_auto_id") @db.VarChar(100)
+  trxType                      TransactionType?   @map("trx_type")
+  toinAmount                   Decimal            @map("toin_amount") @db.Decimal(18, 2)
+  usdtAmount                   Decimal            @map("usdt_amount") @db.Decimal(18, 2)
+  usdtConversionRate           Decimal            @map("usdt_conversion_rate") @db.Decimal(18, 6)
+  trxSuccessDatetime           DateTime?          @map("trx_success_datetime")
+  trxPaymentGateway            String?            @map("trx_payment_gateway") @db.VarChar(100)
+  trxPaymentGatewayReferenceId String?            @map("trx_payment_gateway_reference_id") @db.VarChar(150)
+  trxPaymentGatewayResponse    String?            @map("trx_payment_gateway_response")
+  trxStatus                    TransactionStatus? @map("trx_status")
+  trxNote                      String?            @map("trx_note") @db.VarChar(255)
+  createdAt                    DateTime           @default(now()) @map("created_at")
+  createdBy                    String?            @map("created_by")
+  updatedAt                    DateTime?          @map("updated_at")
+  updatedBy                    String?            @map("updated_by")
+
+  // Relations
+  userId                       String             @map("user_id")
+  levelId                      String?            @map("level_id")
+  userStakingPackageId         String?            @map("user_staking_package_id")
+  withdrawalRequestId          String?            @unique @map("withdrawal_request_id")
+  stakingAdjustmentId          String?            @unique @map("staking_adjustment_id")
+
+  user                         User?               @relation(fields: [userId], references: [id])
+  referralLevel                ReferralLevel?      @relation(fields: [levelId], references: [id])
+  userStakingPackage           UserStakingPackage? @relation(fields: [userStakingPackageId], references: [id])
+  withdrawalRequest            WithdrawalRequest?  @relation(fields: [withdrawalRequestId], references: [id])
+  stakingAdjustment            StakingAdjustment?  @relation(fields: [stakingAdjustmentId], references: [id])
+
+  @@map("transactions")
+}
+
+
+model WithdrawalRequest {
+  id                    String              @id @default(uuid())
+  userStakingPackageId  String              @map("user_staking_package_id")
+  address               String              @map("address") @db.VarChar(255)
+  amount                Decimal             @map("amount") @db.Decimal(18, 2)
+  currency              String              @map("currency") @db.VarChar(10)
+  platformFee           Decimal             @map("platform_fee") @db.Decimal(18, 2)
+  status                WithdrawalStatus    @default(PENDING) @map("status")
+  remark                String?             @map("remark") @db.VarChar(255)
+  createdAt             DateTime            @default(now()) @map("created_at")
+  createdBy             String?             @map("created_by")
+  updatedAt             DateTime?           @map("updated_at")
+  deletedAt             DateTime?           @map("deleted_at")
+
+  userStakingPackage    UserStakingPackage  @relation(fields: [userStakingPackageId], references: [id])
+  creator               User?               @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  transaction           Transaction?
+
+  @@map("withdrawal_requests")
+}
+
+
+model AirDropEvent {
+  id                String    @id @default(uuid())
+  eventName         String    @unique @map("event_name") @db.VarChar(100)
+  totalAmount       Decimal   @map("total_amount") @db.Decimal(18, 2)
+  usedAmount        Decimal   @map("used_amount") @db.Decimal(18, 2)
+  usdConversionRate Decimal   @map("usd_conversion_rate") @db.Decimal(18, 6)
+  eventStartDate    DateTime  @map("event_start_date")
+  eventEndDate      DateTime  @map("event_end_date")
+  isActive          Boolean   @default(true) @map("is_active")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  createdBy         String?   @map("created_by")
+  updatedAt         DateTime? @map("updated_at")
+  updatedBy         String?   @map("updated_by")
+  deletedAt         DateTime? @map("deleted_at")
+  deletedBy         String?   @map("deleted_by")
+
+  @@map("air_drop_events")
+}
+
+model ReferralMilestone {
+  id               String    @id @default(uuid())
+  sequenceNumber   Int?      @unique @default(autoincrement()) @map("sequence_number")
+  referralName     String    @unique @map("referral_name") @db.VarChar(100)
+  toinAmount       Decimal   @map("toin_amount") @db.Decimal(18, 6)
+  targetPerson     Int?      @default(0) @map("target_person")
+  isActive         Boolean   @default(true) @map("is_active")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  createdBy        String?   @map("created_by")
+  updatedAt        DateTime? @map("updated_at")
+  updatedBy        String?   @map("updated_by")
+  deletedAt        DateTime? @map("deleted_at")
+  deletedBy        String?   @map("deleted_by")
+  perUserMilestone Int?      @default(0) @map("per_user_milestone")
+  description      String?
+
+  referralHistory ReferralHistory[]
+
+  @@map("referral_milestones")
+}
+
+model ReferralHistory {
+  id                  String    @id @default(uuid())
+  userId              String    @map("user_id")
+  referralMilestoneId String    @map("referral_milestone_id")
+  referralCode        String?   @map("referral_code") @db.VarChar(20)
+  referralUserId      String?   @map("referral_user_id")
+  isActive            Boolean   @default(true) @map("is_active")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  createdBy           String?   @map("created_by")
+  updatedAt           DateTime? @map("updated_at")
+  updatedBy           String?   @map("updated_by")
+  deletedAt           DateTime? @map("deleted_at")
+  deletedBy           String?   @map("deleted_by")
+
+  //relations
+  referralMilestone ReferralMilestone @relation(fields: [referralMilestoneId], references: [id])
+  user              User              @relation(fields: [userId], references: [id])
+
+  @@map("referral_histories")
+}
+
+model Challenge {
+  id               String             @id @default(uuid())
+  challengeTitle   String             @map("challenge_title") @db.VarChar(255)
+  description      String?
+  startDate        DateTime           @map("start_date")
+  endDate          DateTime           @map("end_date")
+  rewardToinAmount Decimal            @map("reward_toin_amount") @db.Decimal(18, 2)
+  postDetails      String?            @map("post_details")
+  isActive         Boolean            @default(true) @map("is_active")
+  createdAt        DateTime           @default(now()) @map("created_at")
+  createdBy        String?            @map("created_by")
+  updatedAt        DateTime?          @map("updated_at")
+  updatedBy        String?            @map("updated_by")
+  deletedAt        DateTime?          @map("deleted_at")
+  deletedBy        String?            @map("deleted_by")
+  challengeHistory ChallengeHistory[]
+
+  @@map("challenges")
+}
+
+model ChallengeHistory {
+  id              String    @id @default(uuid())
+  userId          String    @map("user_id")
+  challengeId     String    @map("challenge_id")
+  challengeStatus String    @map("challenge_status") @db.VarChar(50)
+  isActive        Boolean   @default(true) @map("is_active")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  createdBy       String?   @map("created_by")
+  updatedAt       DateTime? @map("updated_at")
+  updatedBy       String?   @map("updated_by")
+  deletedAt       DateTime? @map("deleted_at")
+  deletedBy       String?   @map("deleted_by")
+  challenge       Challenge @relation(fields: [challengeId], references: [id])
+
+  @@map("challenge_histories")
+}
+
+model ReferralLevel {
+  id                      String    @id @default(uuid())
+  levelName               String    @unique @map("level_name") @db.VarChar(100)
+  referralBonusPercentage Int       @default(0) @map("referral_bonus_percentage")
+  isActive                Boolean   @default(true) @map("is_active")
+  createdAt               DateTime  @default(now()) @map("created_at")
+  createdBy               String?   @map("created_by")
+  updatedAt               DateTime? @map("updated_at")
+  updatedBy               String?   @map("updated_by")
+  deletedAt               DateTime? @map("deleted_at")
+  deletedBy               String?   @map("deleted_by")
+  levelNumber             Int       @default(0) @map("level_number")
+
+  transactions              Transaction[]
+  referralCommissionHistory ReferralRewardCommissionHistory[]
+
+  @@map("referral_levels")
+}
+
+model ReferralHierarchy {
+  id                String   @id @default(uuid())
+  userId            String   @map("user_id")
+  ancestorId        String   @map("ancestor_id")
+  level             Int
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  user              User     @relation("ReferralHierarchyUser", fields: [userId], references: [id])
+  ancestor          User     @relation("ReferralHierarchyAncestor", fields: [ancestorId], references: [id])
+  
+  @@unique([userId, ancestorId, level])
+  @@index([ancestorId, level])
+  @@index([userId])
+  @@map("referral_hierarchy")
+}
+
+model ReferralRewardCommissionHistory {
+  id              String        @id @default(uuid())
+  userId          String        @map("user_id")
+  referralLevelId String        @map("referral_level_id")
+  levelName       String        @map("level_name") @db.VarChar(100)
+  toinAmount      Decimal       @map("toin_amount") @db.Decimal(18, 2)
+  transactionDate DateTime      @map("transaction_date")
+  isActive        Boolean       @default(true) @map("is_active")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  createdBy       String?       @map("created_by")
+  updatedAt       DateTime?     @map("updated_at")
+  updatedBy       String?       @map("updated_by")
+  deletedAt       DateTime?     @map("deleted_at")
+  deletedBy       String?       @map("deleted_by")
+  levelNumber     String        @map("level_number") @db.VarChar(100)
+  referralLevel   ReferralLevel @relation(fields: [referralLevelId], references: [id])
+
+  @@map("referral_commission_histories")
+}
+
+model Setting {
+  id        String    @id @default(uuid())
+  keyName   String    @map("key_name") @db.VarChar(100)
+  value     String?
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at")
+  createdBy String?   @map("created_by")
+  updatedAt DateTime? @map("updated_at")
+  updatedBy String?   @map("updated_by")
+  deletedAt DateTime? @map("deleted_at")
+  deletedBy String?   @map("deleted_by")
+
+  @@map("settings")
+}
+
+model TicketCategory {
+  id        String    @id @default(uuid())
+  name      String    @db.VarChar(150)
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at")
+  createdBy String?   @map("created_by")
+  updatedAt DateTime? @map("updated_at")
+  updatedBy String?   @map("updated_by")
+  deletedAt DateTime? @map("deleted_at")
+  deletedBy String?   @map("deleted_by")
+  tickets   Ticket[]
+
+  @@map("ticket_categories")
+}
+
+model Ticket {
+  id               String          @id @default(uuid())
+  ticketNo         String?         @map("ticket_no")
+  subject          String          @db.VarChar(255)
+  description      String
+  ticketCategoryId String          @map("ticket_category_id")
+  status           TicketStatus    @default(OPEN)
+  priority         TicketPriority  @default(MEDIUM)
+  respondedAt      DateTime?       @map("responded_at")
+  createdAt        DateTime        @default(now()) @map("created_at")
+  createdBy        String          @map("created_by")
+  updatedAt        DateTime?       @map("updated_at")
+  updatedBy        String?         @map("updated_by")
+  deletedAt        DateTime?       @map("deleted_at")
+  deletedBy        String?         @map("deleted_by")
+  messages         TicketMessage[]
+  creator          User            @relation(fields: [createdBy], references: [id])
+  category         TicketCategory  @relation(fields: [ticketCategoryId], references: [id])
+
+  @@map("tickets")
+}
+
+model TicketMessage {
+  id        String    @id @default(uuid())
+  ticketId  String    @map("ticket_id")
+  message   String
+  senderId  String    @map("sender_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  createdBy String?   @map("created_by")
+  updatedAt DateTime? @map("updated_at")
+  updatedBy String?   @map("updated_by")
+  deletedAt DateTime? @map("deleted_at")
+  deletedBy String?   @map("deleted_by")
+  sender    User      @relation(fields: [senderId], references: [id])
+  ticket    Ticket    @relation(fields: [ticketId], references: [id])
+
+  @@map("ticket_messages")
+}
+
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  type      NotificationType
+  title     String
+  message   String   @db.Text
+  data      Json?    
+  isRead    Boolean   @default(false) @map("is_read")
+  readAt    DateTime? @map("read_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime ? @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+
+  @@map("notifications")
+}
+
+model UserWalletAddress {
+  id              String    @id @default(uuid())
+  userId          String    @map("user_id")
+  walletAccountId String    @map("wallet_account_id") @db.VarChar(255)
+  name            String?   @db.VarChar(100)
+  status          Boolean   @default(true)
+  isDefault       Boolean   @default(false) @map("is_default")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  createdBy       String?   @map("created_by")
+  updatedAt       DateTime? @updatedAt @map("updated_at")
+  updatedBy       String?   @map("updated_by")
+  deletedAt       DateTime? @map("deleted_at")
+  deletedBy       String?   @map("deleted_by")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("user_wallet_addresses")
+}
+
+enum NotificationType {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
+}
+
+
+enum WithdrawalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+
+enum TicketStatus {
+  OPEN
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+  SUSPENDED
+  DORMANT
+  CLOSED
+  PENDING_VERIFICATION
+  INACTIVE
+  DELETED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_TO_SAY
+}
+
+enum TransactionType {
+  STAKE
+  COMMISSION_BONUS
+  PROFIT
+  WITHDRAWAL
+  REFUND
+  STAKING_BONUS
+  VOID
+  ENTRY_BONUS
+  KYC_BONUS
+  CHALLENGE_BONUS
+  LEVELING_BONUS
+  SOCIAL_REFERRAL
+  CLAIM_BONUS
+  STAKING_ADJUSTMENT
+}
+
+enum TransactionStatus {
+  INITIATE
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+  REFUNDED
+  VOIDED
+  WAITING
+  CONFIRMING
+  CONFIRMED
+  SENDING
+  PARTIALLY_PAID
+  EXPIRED
+}
+
+enum AudienceType {
+  MEMBER
+  SYSTEM_USER
+}
+
+enum StakeCreatedBy {
+  ADMIN
+  MEMBER
+}
+
+enum StakingAdjustmentType {
+ADD
+DEDUCT
+}

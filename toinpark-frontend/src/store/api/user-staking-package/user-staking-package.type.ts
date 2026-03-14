@@ -1,0 +1,116 @@
+import { TApiResponse, TPaginationArgs } from "../common-api-types";
+
+export type TUserStakingPackageItem = {
+  id: string;
+  userId: string;
+  packageId: string;
+  toinAmount: number;
+  usdtAmount: number;
+  bonusAmount: number;
+  dailyProfitPercent: number;
+  startDate: string;
+  totalProfit: number;
+  initialEndDate: string;
+  recurringProfitDays: number;
+  previousRewardDate: string;
+  nextRewardDate: string;
+  usdConversionRate: number;
+  stakedToin: boolean;
+  isBonusDone: boolean;
+  isLevelingBonusDone: boolean;
+  submitForWithdraw: boolean;
+  withdrawalStatus: string | null;
+  isActive: boolean;
+  minimumDurationInDays: number;
+  createdAt: string;
+  createdBy: string;
+  updatedAt: string | null;
+  updatedBy: string | null;
+  totalToinDebitAmount: number;
+  totalToinCreditAmount: number;
+  totalUSDTDebitAmount: number;
+  totalUSDTCreditAmount: number;
+  toinBalanceAmount: number;
+  usdtBalanceAmount: number;
+  stakeCreatedBy: string;
+  package: {
+    id: string;
+    name: string;
+    description: string;
+    dailyProfitPercent: number;
+    bonusAmount: number;
+    maxToinAmount: number;
+    minToinAmount: number;
+    minimumDurationInDays: number;
+    recurringProfitDays: number;
+    totalToinPurchasedWithUSD: number;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+  };
+  withdrawalRequests: any[];
+  stakingAdjustments: any[];
+  user: {
+    id: string;
+    phoneNumber: string | null;
+    email: string;
+    emailVerified: boolean;
+    emailVerifiedAt: string;
+    phoneVerified: boolean;
+    phoneVerifiedAt: string | null;
+    username: string;
+    userRole: string;
+    status: string;
+    twoFactorEnabled: boolean;
+    twoFactorSecret: string | null;
+    lockoutEnabled: boolean;
+    lockoutEnd: string | null;
+    accessFailedCount: number;
+    referrerId: string | null;
+    referralCode: string;
+    lastLoginAt: string;
+    lastLoginIp: string | null;
+    loginCount: number;
+    isKycVerified: boolean;
+    kycVerifiedAt: string | null;
+    userProfile: {
+      id: string;
+      firstName: string;
+      lastName: string;
+      profileImageUrl: string | null;
+      addressLine1: string | null;
+      city: string | null;
+      zipCode: string | null;
+      userId: string;
+    };
+  };
+  transactions: {
+    id: string;
+    transactionAutoId: string;
+    trxType: string;
+    toinAmount: number;
+    usdtAmount: number;
+    usdtConversionRate: number;
+    trxSuccessDatetime: string;
+    trxPaymentGateway: string | null;
+    trxPaymentGatewayReferenceId: string | null;
+    trxPaymentGatewayResponse: string | null;
+    trxStatus: string;
+    trxNote: string;
+    createdAt: string;
+    createdBy: string;
+    updatedAt: string | null;
+    userId: string;
+    levelId: string | null;
+    userStakingPackageId: string;
+    stakingAdjustmentId: string | null;
+  }[];
+};
+
+export type TGetUserStakingPackagesRes = TApiResponse<
+  TUserStakingPackageItem[] | any
+>;
+export type TGetUserStakingPackagesArgs =
+  TPaginationArgs<TUserStakingPackageItem>;
+export type TGetMyStakesRes = TApiResponse<TUserStakingPackageItem[] | any>;
+export type TGetMyStakesArgs = TPaginationArgs<TUserStakingPackageItem>;

@@ -1,0 +1,18 @@
+{
+  "css.validate": false,
+  "tailwindCSS.emmetCompletions": true,
+  "cSpell.words": [
+    "nums",
+    "Persistor",
+    "toin",
+    "toinpark",
+    "Toins"
+  ],
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "eslint.run": "onType"
+}

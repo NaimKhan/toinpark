@@ -1,0 +1,27 @@
+nest start run:dev
+
+
+npm run seed              # Full seed
+npm run seed:users        # Only users
+npm run seed:no-clean     # Add without cleaning
+npm run db:reset          # Reset everything
+npm run db:studio         # Open studio
+
+npx prisma migrate dev --name "write message....."
+npx prisma migrate deploy
+npx prisma generate
+npx prisma db pull
+
+// generate module, controller, service, dto 
+nest g module <dashboard> && nest g controller <dashboard> --no-spec && nest g service <dashboard> --no-spec && nest g class <dashboard>/dto/<dashboard>-response.dto --no-spec
+
+
+
+
+
+
+
+
+
+
+

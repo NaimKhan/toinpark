@@ -1,0 +1,99 @@
+/*
+------------------------------------------------
+react-phone-input-2
+------------------------------------------------
+*/
+.react-tel-input .form-control {
+  @apply !h-16 w-full rounded-lg !border !border-primary/0 !bg-input !ps-24 text-default-200 font-medium focus:border-primary;
+}
+.react-tel-input .form-control {
+  @apply h-16 !w-full rounded-lg !border !border-primary/0 !bg-input !pl-[84px] !ps-14 text-default-200 !text-lg !tracking-[-0.04px] font-normal focus:border-primary;
+}
+
+.react-tel-input .form-control:focus {
+  @apply !border !border-primary/60;
+}
+.react-tel-input .flag-dropdown {
+  @apply !rounded-none w-fit !bg-primary !text-default-900 !m-2 !p-3 hover:bg-primary;
+}
+.react-tel-input .flag-dropdown {
+  @apply !rounded-s-lg !border-0 !bg-primary;
+}
+.react-tel-input .flag-dropdown.open {
+  @apply bg-background border border-border;
+}
+.react-tel-input .flag-dropdown.open .selected-flag {
+  @apply bg-primary;
+}
+.react-tel-input .flag-dropdown .selected-flag:hover {
+  @apply !bg-input/20;
+}
+.react-tel-input .country-list {
+  @apply bg-card;
+}
+.react-tel-input .flag-dropdown.open .selected-flag {
+  @apply !bg-primary;
+}
+
+.react-tel-input .country-list {
+  @apply !bg-input text-default-100 !mt-5 !-ml-4 rounded-2xl;
+}
+
+.react-tel-input .country-list .country {
+  @apply !px-5 !py-4;
+}
+.react-tel-input .country-list .country.highlight {
+  @apply !bg-primary text-default-300 p-2;
+}
+.react-tel-input .country-list .country:hover {
+  @apply !bg-primary/50 text-default-100;
+}
+.react-tel-input .country-list .country .dial-code {
+  @apply !text-default-100;
+}
+.react-tel-input .country-list .country.highlight .dial-code {
+  @apply !text-default-300;
+}
+.react-tel-input .country-list .country:hover .dial-code {
+  @apply !text-default-100;
+}
+.react-tel-input .country-list {
+  scrollbar-width: thin;
+  /* scrollbar-color: #4b5563 #00000000; */
+}
+
+/* 
+------------------------------------------------
+ General scrollbar styling for Firefox 
+------------------------------------------------
+*/
+.custom-scrollbar {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #4b5563 #00000000; /* Firefox */
+  scroll-behavior: smooth;
+  overflow-y: auto;
+}
+
+/* / WebKit browsers (Chrome, Safari, etc.) / */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #4b5563;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.no-scrollbar {
+  overflow-y: auto;
+}
+.no-scrollbar::-webkit-scrollbar {
+  width: 0px;
+}
+
+.no-scrollbar::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}

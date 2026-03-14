@@ -1,0 +1,60 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: toin-db-dev
+    restart: always
+    environment:
+      POSTGRES_DB: toinpark
+      POSTGRES_USER: admin
+      # আপনার আগের কাজ করা পাসওয়ার্ড ফরম্যাট
+      POSTGRES_PASSWORD: "hGfQ!7jW&jl$YDG&"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./toinpark_full_backup.sql:/docker-entrypoint-initdb.d/import.sql
+    ports:
+      - "5432:5432"
+
+  # Redis সার্ভিস যোগ করা হলো
+  redis:
+    image: redis:alpine
+    container_name: toin-redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  backend:
+    build: ./toinpark-backend
+    container_name: toin-backend
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://admin:hGfQ!7jW&jl$YDG&@db:5432/toinpark
+      - PORT=5000
+      - JWT_SECRET=this_is_a_very_long_secret_key_32_chars_long
+      - JWT_REFRESH_SECRET=another_very_long_refresh_key_32_chars_long
+      - BASE_URL=http://192.168.5.243:5000
+      - SENDGRID_API_KEY=SG.placeholder
+      - MAIL_FROM=noreply@toinpark.com
+      - TWILIO_ACCOUNT_SID=AC_placeholder
+      - TWILIO_AUTH_TOKEN=placeholder
+      - TWILIO_PHONE_NUMBER=+1234567890
+      # Redis কানেকশনের জন্য নিচের ২ লাইন জরুরি
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - db
+      - redis
+    ports:
+      - "5000:5000"
+
+  frontend:
+    build: ./toinpark-frontend
+    container_name: toin-frontend
+    restart: always
+    environment:
+      # ফ্রন্টএন্ডকে বলে দেওয়া যে ব্যাকএন্ড কোথায় আছে
+      - NEXT_PUBLIC_API_URL=http://192.168.5.243:5000/api/v1
+    ports:
+      - "3000:3000"
+
+volumes:
+  postgres_data:

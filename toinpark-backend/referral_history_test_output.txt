@@ -1,0 +1,15 @@
+PASS src/modules/user/referral-history/referral-history.service.spec.ts (8.744 s)
+  ReferralHistoryService
+    √ should be defined (13 ms)
+    referralMilestoneList
+      √ should return referral milestone list (6 ms)
+      √ should handle empty list (3 ms)
+    createReferralHistory
+      √ should create referral history (4 ms)
+      √ should handle errors during creation (5 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       5 passed, 5 total
+Snapshots:   0 total
+Time:        9.063 s
+Ran all test suites matching src/modules/user/referral-history/referral-history.service.spec.ts.
