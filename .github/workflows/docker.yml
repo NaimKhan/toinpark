@@ -23,7 +23,8 @@ jobs:
           context: ./toinpark-backend
           file: ./toinpark-backend/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/toin-backend:latest
+          # ডকার হাব ইউজার naimcse ব্যবহার করা হয়েছে
+          tags: naimcse/toin-backend:latest
 
       - name: Build and Push Frontend
         uses: docker/build-push-action@v5
@@ -31,7 +32,8 @@ jobs:
           context: ./toinpark-frontend
           file: ./toinpark-frontend/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/toin-frontend:latest
+          # ডকার হাব ইউজার naimcse ব্যবহার করা হয়েছে
+          tags: naimcse/toin-frontend:latest
 
   deploy:
     needs: build
